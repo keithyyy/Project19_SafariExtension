@@ -5,6 +5,10 @@
 //  Created by Keith Crooc on 2021-11-09.
 //
 
+// 1. ✅ Add a bar button item that lets users select from a handful of prewritten example scripts, shown using a UIAlertController – at the very least your list should include the example we used in this project.
+// 2. You're already receiving the URL of the site the user is on, so use UserDefaults to save the user's JavaScript for each site. You should convert the URL to a URL object in order to use its host property.
+// 3. For something bigger, let users name their scripts, then select one to load using a UITableView.
+
 import UIKit
 import MobileCoreServices
 import UniformTypeIdentifiers
@@ -24,6 +28,7 @@ class ActionViewController: UIViewController {
         notificationCenter.addObserver(self, selector: #selector(adjustForKeyboard), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
     
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(done))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .bookmarks, target: self, action: #selector(showPresets))
         
         if let inputItem = extensionContext?.inputItems.first as? NSExtensionItem {
             if let itemProvider = inputItem.attachments?.first {
@@ -44,6 +49,35 @@ class ActionViewController: UIViewController {
         }
     }
 
+    @IBAction func showPresets() {
+            let ac = UIAlertController(title: "Choose a Preset", message: "Select a templated javascript action", preferredStyle: .alert)
+            
+        let alertScript = UIAlertAction(title: "alert()", style: .default) { [weak self, weak ac] action in
+            let preset = "alert(document.title)"
+            self?.writeScript(preset)
+        }
+        
+        
+    
+        let messageScript = UIAlertAction(title: "prompt()", style: .default) {
+            [weak self, weak ac] action in
+            let preset = "prompt()"
+            self?.writeScript(preset)
+        }
+        
+        ac.addAction(alertScript)
+        ac.addAction(messageScript)
+        
+        present(ac, animated: true)
+            
+    }
+    
+    func writeScript(_ preset: String) {
+        script.text = preset
+    }
+    
+    
+    
     @IBAction func done() {
         // Return any edited content to the host app.
         // This template doesn't do anything, so we just echo the passed in items.
